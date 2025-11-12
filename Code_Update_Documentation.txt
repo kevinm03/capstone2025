@@ -1,0 +1,22 @@
+/***********************************************************************************/
+
+Code Updates
+
+When a git commit/push is done, ensure proper documentation is done. 
+If the new update description is too long to be included in git commit write here along with date and name.
+
+Recommended use of default notepad app.
+
+/***********************************************************************************/
+
+11/11/2025 - Kevin Morales
+
+Update documentation file created.
+Project created.
+
+1 LPUART (low power UART) line created for T_VCP. Used for programming through STlink
+
+2 UART lines selected for the two different motor controllers we'll use.
+	UART4 & 5. Asynch mode, default settings.
+
+
