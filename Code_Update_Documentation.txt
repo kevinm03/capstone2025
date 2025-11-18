@@ -14,9 +14,15 @@ Recommended use of default notepad app.
 Update documentation file created.
 Project created.
 
-1 LPUART (low power UART) line created for T_VCP. Used for programming through STlink
+	1 LPUART (low power UART) line created for T_VCP. Used for programming through STlink
 
-2 UART lines selected for the two different motor controllers we'll use.
+	2 UART lines selected for the two different motor controllers we'll use.
 	UART4 & 5. Asynch mode, default settings.
 
+11/18/2025 - Kevin Morales
 
+RoboClaw.h & RoboClaw.cpp files added to project.
+RoboClaw files are meant for functionality with the Solo300 Motor Controllers, enable serial comms.
+
+	RoboClaw.h is fully changed to support STM32 functionality.
+	Still need to finish updating RoboClaw.cpp.
