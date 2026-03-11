@@ -70,12 +70,36 @@ void Error_Handler(void);
 #define RCC_OSC_IN_GPIO_Port GPIOF
 #define RCC_OSC_OUT_Pin GPIO_PIN_1
 #define RCC_OSC_OUT_GPIO_Port GPIOF
+#define M1_A_Pin GPIO_PIN_0
+#define M1_A_GPIO_Port GPIOC
+#define M1_B_Pin GPIO_PIN_1
+#define M1_B_GPIO_Port GPIOC
+#define Servo1_PWM_Pin GPIO_PIN_0
+#define Servo1_PWM_GPIO_Port GPIOA
+#define Servo2_PWM_Pin GPIO_PIN_1
+#define Servo2_PWM_GPIO_Port GPIOA
+#define Actuator2_PWR_Pin GPIO_PIN_6
+#define Actuator2_PWR_GPIO_Port GPIOC
+#define Actuator2_FwdRev_Pin GPIO_PIN_12
+#define Actuator2_FwdRev_GPIO_Port GPIOA
 #define T_SWDIO_Pin GPIO_PIN_13
 #define T_SWDIO_GPIO_Port GPIOA
 #define T_SWCLK_Pin GPIO_PIN_14
 #define T_SWCLK_GPIO_Port GPIOA
+#define Actuator1_PWR_Pin GPIO_PIN_15
+#define Actuator1_PWR_GPIO_Port GPIOA
+#define Motor1_Tx_Pin GPIO_PIN_10
+#define Motor1_Tx_GPIO_Port GPIOC
+#define Motor1_Rx_Pin GPIO_PIN_11
+#define Motor1_Rx_GPIO_Port GPIOC
+#define Motor2_Tx_Pin GPIO_PIN_12
+#define Motor2_Tx_GPIO_Port GPIOC
+#define Motor2_Rx_Pin GPIO_PIN_2
+#define Motor2_Rx_GPIO_Port GPIOD
 #define T_SWO_Pin GPIO_PIN_3
 #define T_SWO_GPIO_Port GPIOB
+#define Actuator1_FwdRev_Pin GPIO_PIN_8
+#define Actuator1_FwdRev_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 
