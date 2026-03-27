@@ -78,16 +78,16 @@ void Error_Handler(void);
 #define Servo1_PWM_GPIO_Port GPIOA
 #define Servo2_PWM_Pin GPIO_PIN_1
 #define Servo2_PWM_GPIO_Port GPIOA
-#define Actuator2_PWR_Pin GPIO_PIN_6
-#define Actuator2_PWR_GPIO_Port GPIOC
-#define Actuator2_FwdRev_Pin GPIO_PIN_12
-#define Actuator2_FwdRev_GPIO_Port GPIOA
+#define Actuator1_DIR_Pin GPIO_PIN_6
+#define Actuator1_DIR_GPIO_Port GPIOC
+#define Actuator1_PWR_Pin GPIO_PIN_12
+#define Actuator1_PWR_GPIO_Port GPIOA
 #define T_SWDIO_Pin GPIO_PIN_13
 #define T_SWDIO_GPIO_Port GPIOA
 #define T_SWCLK_Pin GPIO_PIN_14
 #define T_SWCLK_GPIO_Port GPIOA
-#define Actuator1_PWR_Pin GPIO_PIN_15
-#define Actuator1_PWR_GPIO_Port GPIOA
+#define Actuator2_DIR_Pin GPIO_PIN_15
+#define Actuator2_DIR_GPIO_Port GPIOA
 #define Motor1_Tx_Pin GPIO_PIN_10
 #define Motor1_Tx_GPIO_Port GPIOC
 #define Motor1_Rx_Pin GPIO_PIN_11
@@ -98,8 +98,8 @@ void Error_Handler(void);
 #define Motor2_Rx_GPIO_Port GPIOD
 #define T_SWO_Pin GPIO_PIN_3
 #define T_SWO_GPIO_Port GPIOB
-#define Actuator1_FwdRev_Pin GPIO_PIN_8
-#define Actuator1_FwdRev_GPIO_Port GPIOB
+#define Actuator2_PWR_Pin GPIO_PIN_8
+#define Actuator2_PWR_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 
