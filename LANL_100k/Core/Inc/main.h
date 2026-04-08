@@ -78,6 +78,18 @@ void Error_Handler(void);
 #define Servo1_PWM_GPIO_Port GPIOA
 #define Servo2_PWM_Pin GPIO_PIN_1
 #define Servo2_PWM_GPIO_Port GPIOA
+#define USART2_TX_Pin GPIO_PIN_2
+#define USART2_TX_GPIO_Port GPIOA
+#define USB_CS_Pin GPIO_PIN_4
+#define USB_CS_GPIO_Port GPIOA
+#define USB_SCK_Pin GPIO_PIN_5
+#define USB_SCK_GPIO_Port GPIOA
+#define USB_MISO_Pin GPIO_PIN_6
+#define USB_MISO_GPIO_Port GPIOA
+#define USB_MOSI_Pin GPIO_PIN_7
+#define USB_MOSI_GPIO_Port GPIOA
+#define USB_IRQ_Pin GPIO_PIN_0
+#define USB_IRQ_GPIO_Port GPIOB
 #define Actuator1_DIR_Pin GPIO_PIN_6
 #define Actuator1_DIR_GPIO_Port GPIOC
 #define Actuator1_PWR_Pin GPIO_PIN_12
@@ -102,7 +114,10 @@ void Error_Handler(void);
 #define Actuator2_PWR_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
-
+#define MAX_REG_REVISION 0x12  // Revision register address (0b10010)
+#define MAX_READ  0x00
+#define MAX_WRITE 0x02              // The chip uses bit 1 for direction in some modes,
+                                    // but standard SPI shift is: (Reg << 3) | Direction
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus
