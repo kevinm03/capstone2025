@@ -41,7 +41,7 @@
 
 /* Private variables ---------------------------------------------------------*/
 
-COM_InitTypeDef BspCOMInit;
+//COM_InitTypeDef BspCOMInit;
 SPI_HandleTypeDef hspi1;
 
 TIM_HandleTypeDef htim1;
@@ -139,7 +139,8 @@ void Actuator1_Reverse(void)
 /* Turn off Actuator 1 */
 void Actuator1_Stop(void)
 {
-    HAL_GPIO_WritePin(Actuator1_PWR_GPIO_Port, Actuator1_PWR_Pin, GPIO_PIN_RESET);        // Power off
+    HAL_GPIO_WritePin(Actuator1_PWR_GPIO_Port, Actuator1_PWR_Pin, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(Actuator1_DIR_GPIO_Port, Actuator1_DIR_Pin, GPIO_PIN_RESET);// Power off
 }
 
 /* Turn on Actuator 2 Forward */
@@ -175,7 +176,8 @@ void Actuator2_Reverse(void)
 /* Turn off Actuator 2 */
 void Actuator2_Stop(void)
 {
-    HAL_GPIO_WritePin(Actuator2_PWR_GPIO_Port, Actuator2_PWR_Pin, GPIO_PIN_RESET);        // Power off
+    HAL_GPIO_WritePin(Actuator2_PWR_GPIO_Port, Actuator2_PWR_Pin, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(Actuator2_DIR_GPIO_Port, Actuator2_DIR_Pin, GPIO_PIN_RESET);// Power off
 }
 
 /* USER CODE END PFP */
@@ -225,11 +227,17 @@ int main(void)
   uint32_t lskeytime = 0;
   const uint32_t timeout = 300;//Refresh time ms
   char input = 0;
-  HAL_UART_Transmit(&huart2, tx_buffer, 27, 10);
 
+  //Actuator1_Reverse();
+  //HAL_Delay(5000);
+  //Actuator1_Stop();
+  HAL_UART_Transmit(&huart2, tx_buffer, 27, 10);
+  Actuator1_Stop();
+  Actuator2_Stop();
   /* USER CODE END 2 */
 
   /* Initialize COM1 port (115200, 8 bits (7-bit data + 1 stop bit), no parity */
+  /*
   BspCOMInit.BaudRate   = 115200;
   BspCOMInit.WordLength = COM_WORDLENGTH_8B;
   BspCOMInit.StopBits   = COM_STOPBITS_1;
@@ -239,7 +247,7 @@ int main(void)
   {
     Error_Handler();
   }
-
+  */
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 //HAL_GPIO_WritePin(Actuator1_DIR_GPIO_Port, Actuator1_DIR_Pin, GPIO_PIN_SET);    // Reverse direction
@@ -247,24 +255,35 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+	//Actuator1_Stop();
+	//Actuator2_Stop();
+
+
 	if (HAL_UART_Receive(&huart2, rx_data,1,10) == HAL_OK){
 		input = (char)rx_data[0];
 		lskeytime = HAL_GetTick();
-
+		HAL_UART_Transmit(&huart2, rx_data, 1, 10);
 		if (input == 'q' || input == 'Q'){// Extend Actuator 1
-			Actuator1_Forward();
+			//Actuator1_Forward();
+			HAL_GPIO_WritePin(Actuator1_DIR_GPIO_Port, Actuator1_DIR_Pin, GPIO_PIN_RESET);  // Forward direction
+			HAL_GPIO_WritePin(Actuator1_PWR_GPIO_Port, Actuator1_PWR_Pin, GPIO_PIN_SET);
 		}
 		if (input == 'w' || input == 'W'){// Extend Actuator 2
-			Actuator2_Forward();
+			HAL_GPIO_WritePin(Actuator2_DIR_GPIO_Port, Actuator2_DIR_Pin, GPIO_PIN_RESET);  // Forward direction
+			HAL_GPIO_WritePin(Actuator2_PWR_GPIO_Port, Actuator2_PWR_Pin, GPIO_PIN_SET);			//Actuator2_Forward();
 		}
 		if (input == 'e' || input == 'E'){// MISC
 			//Insert
 		}
 		if (input == 'a' || input == 'A'){// Retract Actuator 1
-			Actuator1_Reverse();
+			//Actuator1_Reverse();
+			HAL_GPIO_WritePin(Actuator1_DIR_GPIO_Port, Actuator1_DIR_Pin, GPIO_PIN_SET);  // Forward direction
+			HAL_GPIO_WritePin(Actuator1_PWR_GPIO_Port, Actuator1_PWR_Pin, GPIO_PIN_SET);
 		}
 		if (input == 's' || input == 'S'){// Retract Actuator 2
-			Actuator2_Reverse();
+			//Actuator2_Reverse();
+			HAL_GPIO_WritePin(Actuator2_DIR_GPIO_Port, Actuator2_DIR_Pin, GPIO_PIN_SET);  // Forward direction
+			HAL_GPIO_WritePin(Actuator2_PWR_GPIO_Port, Actuator2_PWR_Pin, GPIO_PIN_SET);
 		}
 		if (input == 'd' || input == 'D'){// MISC Reverse
 			//Insert Reverse
@@ -277,7 +296,7 @@ int main(void)
 
 		input = 0;
 	}
-
+	 //Control and Comms Logic
 
   }
   /* USER CODE END 3 */
