@@ -29,9 +29,6 @@ extern "C" {
 /* Includes ------------------------------------------------------------------*/
 #include "stm32g4xx_hal.h"
 
-#include "stm32g4xx_nucleo.h"
-#include <stdio.h>
-
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -74,12 +71,14 @@ void Error_Handler(void);
 #define M1_A_GPIO_Port GPIOC
 #define M1_B_Pin GPIO_PIN_1
 #define M1_B_GPIO_Port GPIOC
+#define Trigger_Actuator_PWR_Pin GPIO_PIN_2
+#define Trigger_Actuator_PWR_GPIO_Port GPIOC
+#define Trigger_Actuator_DIR_Pin GPIO_PIN_3
+#define Trigger_Actuator_DIR_GPIO_Port GPIOC
 #define Servo1_PWM_Pin GPIO_PIN_0
 #define Servo1_PWM_GPIO_Port GPIOA
 #define Servo2_PWM_Pin GPIO_PIN_1
 #define Servo2_PWM_GPIO_Port GPIOA
-#define USART2_TX_Pin GPIO_PIN_2
-#define USART2_TX_GPIO_Port GPIOA
 #define USB_CS_Pin GPIO_PIN_4
 #define USB_CS_GPIO_Port GPIOA
 #define USB_SCK_Pin GPIO_PIN_5
