@@ -40,11 +40,7 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-<<<<<<< HEAD
 
-COM_InitTypeDef BspCOMInit;
-=======
->>>>>>> Dylan_Branch
 SPI_HandleTypeDef hspi1;
 
 TIM_HandleTypeDef htim1;
@@ -113,6 +109,7 @@ void Drill_Stop(void){}
 
 void Actuator1_Forward(void)
 {
+
 	if(HAL_GPIO_ReadPin(Actuator1_DIR_GPIO_Port,Actuator1_DIR_Pin) == GPIO_PIN_RESET){
 		return;
 		}
@@ -342,39 +339,13 @@ int main(void)
   MX_UART5_Init();
   MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
-<<<<<<< HEAD
 
-=======
->>>>>>> Dylan_Branch
   uint32_t lskeytime = 0;
   const uint32_t timeout = 300;//Refresh time ms
   char input = 0;
   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
   __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 1500);
 
-<<<<<<< HEAD
-  //Actuator1_Reverse();
-  //HAL_Delay(5000);
-  //Actuator1_Stop();
-  Actuator1_Stop();
-  Actuator2_Stop();
-  Trigger_Actuator_Stop();
-  M1_A();
-
-  /* USER CODE END 2 */
-
-  /* Initialize COM1 port (115200, 8 bits (7-bit data + 1 stop bit), no parity */
-  BspCOMInit.BaudRate   = 115200;
-  BspCOMInit.WordLength = COM_WORDLENGTH_8B;
-  BspCOMInit.StopBits   = COM_STOPBITS_1;
-  BspCOMInit.Parity     = COM_PARITY_NONE;
-  BspCOMInit.HwFlowCtl  = COM_HWCONTROL_NONE;
-  if (BSP_COM_Init(COM1, &BspCOMInit) != BSP_ERROR_NONE)
-  {
-    Error_Handler();
-  }
-
-=======
   uint32_t servoPos = 1495;
   HAL_UART_Transmit(&huart2, tx_buffer, 27, 10);
   Actuator1_Stop();
@@ -382,30 +353,19 @@ int main(void)
   Trigger_Actuator_Stop();
 
 
-
-
-
   /* USER CODE END 2 */
 
->>>>>>> Dylan_Branch
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1){
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-<<<<<<< HEAD
-	Actuator1_Stop();
-	Actuator2_Stop();
-
 	  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
-=======
-	//Actuator1_Stop();
-	//Actuator2_Stop();
-	  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, servoPos);
->>>>>>> Dylan_Branch
 
-/*
+	  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, servoPos);
+
+
 	if (HAL_UART_Receive(&huart2, rx_data,1,10) == HAL_OK){
 		input = (char)rx_data[0];
 		lskeytime = HAL_GetTick();
@@ -471,7 +431,7 @@ int main(void)
 		//__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 1500);//Return Servo to Neutral
 		input = 0;
 	}
-	*/
+
 	 //Control and Comms Logic
 
   }
@@ -585,30 +545,12 @@ static void MX_TIM1_Init(void)
 
   /* USER CODE END TIM1_Init 1 */
   htim1.Instance = TIM1;
-<<<<<<< HEAD
-  htim1.Init.Prescaler = 128;
-  htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim1.Init.Period = 65;
-  htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  htim1.Init.RepetitionCounter = 0;
-  htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-  if (HAL_TIM_Base_Init(&htim1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
-  if (HAL_TIM_ConfigClockSource(&htim1, &sClockSourceConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-=======
   htim1.Init.Prescaler = 169;
   htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim1.Init.Period = 3029;
   htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim1.Init.RepetitionCounter = 0;
   htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
->>>>>>> Dylan_Branch
   if (HAL_TIM_PWM_Init(&htim1) != HAL_OK)
   {
     Error_Handler();
@@ -828,14 +770,11 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOD_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-<<<<<<< HEAD
   HAL_GPIO_WritePin(GPIOC, Trigger_Actuator_PWR_Pin|Actuator1_DIR_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(Trigger_Actuator_DIR_GPIO_Port, Trigger_Actuator_DIR_Pin, GPIO_PIN_RESET);
-=======
-  HAL_GPIO_WritePin(GPIOC, Trigger_Actuator_PWR_Pin|Trigger_Actuator_DIR_Pin, GPIO_PIN_RESET);
->>>>>>> Dylan_Branch
+
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOA, USB_CS_Pin|Actuator1_PWR_Pin|Actuator2_DIR_Pin, GPIO_PIN_SET);
@@ -846,7 +785,6 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(Actuator2_PWR_GPIO_Port, Actuator2_PWR_Pin, GPIO_PIN_SET);
 
-<<<<<<< HEAD
   /*Configure GPIO pins : Trigger_Actuator_PWR_Pin Trigger_Actuator_DIR_Pin */
   GPIO_InitStruct.Pin = Trigger_Actuator_PWR_Pin|Trigger_Actuator_DIR_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
@@ -862,15 +800,6 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Alternate = GPIO_AF7_USART2;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-=======
-  /*Configure GPIO pins : Trigger_Actuator_PWR_Pin Trigger_Actuator_DIR_Pin Actuator1_DIR_Pin */
-  GPIO_InitStruct.Pin = Trigger_Actuator_PWR_Pin|Trigger_Actuator_DIR_Pin|Actuator1_DIR_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
-
->>>>>>> Dylan_Branch
   /*Configure GPIO pins : USB_CS_Pin Actuator1_PWR_Pin Actuator2_DIR_Pin */
   GPIO_InitStruct.Pin = USB_CS_Pin|Actuator1_PWR_Pin|Actuator2_DIR_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
