@@ -110,7 +110,7 @@ void Drill_Stop(void){}
 
 void Actuator1_Forward(void)
 {
-	while(HAL_GPIO_Read(Extending_Switch_GPIO_Port,Extending_Switch_Pin) == GPIO_PIN_SET){
+	while(HAL_GPIO_ReadPin(Extending_Switch_GPIO_Port,Extending_Switch_Pin) == GPIO_PIN_SET){
 		HAL_GPIO_WritePin(Actuator1_DIR_GPIO_Port, Actuator1_DIR_Pin, GPIO_PIN_RESET);  // Forward direction
 		HAL_GPIO_WritePin(Actuator1_PWR_GPIO_Port,    Actuator1_PWR_Pin,    GPIO_PIN_SET);     // Power on
 	}
@@ -132,7 +132,7 @@ void Actuator1_Stop(void)
 /* Turn on Actuator 2 Forward */
 void Actuator2_Forward(void)
 {
-	while(HAL_GPIO_Read(Lowering_Switch_GPIO_Port,Lowering_Switch_Pin) == GPIO_PIN_SET){
+	while(HAL_GPIO_ReadPin(Lowering_Switch_GPIO_Port,Lowering_Switch_Pin) == GPIO_PIN_SET){
 		HAL_GPIO_WritePin(Actuator2_PWR_GPIO_Port,    Actuator2_PWR_Pin,    GPIO_PIN_SET);     // Power on
 		HAL_GPIO_WritePin(Actuator2_DIR_GPIO_Port, Actuator2_DIR_Pin, GPIO_PIN_RESET);  // Forward direction
 
@@ -140,7 +140,7 @@ void Actuator2_Forward(void)
 }
 
 /* Turn on Actuator 2 Reverse */
-void Actuator2__Reverse(void)
+void Actuator2_Reverse(void)
 {
 		HAL_GPIO_WritePin(Actuator2_DIR_GPIO_Port, Actuator2_DIR_Pin, GPIO_PIN_SET);    // Reverse direction
 		HAL_GPIO_WritePin(Actuator2_PWR_GPIO_Port,    Actuator2_PWR_Pin,    GPIO_PIN_SET);    // Power on
@@ -278,12 +278,10 @@ int main(void)
 		HAL_UART_Transmit(&huart2, rx_data, 1, 10);
 		if (input == 'q' || input == 'Q'){// Extend Actuator 1
 			//Actuator1_Forward();
-			HAL_GPIO_WritePin(Actuator1_DIR_GPIO_Port, Actuator1_DIR_Pin, GPIO_PIN_RESET);  // Forward direction
-			HAL_GPIO_WritePin(Actuator1_PWR_GPIO_Port, Actuator1_PWR_Pin, GPIO_PIN_SET);
+			Actuator1_Forward();
 		}
 		if (input == 'w' || input == 'W'){// Extend Actuator 2
-			HAL_GPIO_WritePin(Actuator2_DIR_GPIO_Port, Actuator2_DIR_Pin, GPIO_PIN_RESET);  // Forward direction
-			HAL_GPIO_WritePin(Actuator2_PWR_GPIO_Port, Actuator2_PWR_Pin, GPIO_PIN_SET);			//Actuator2_Forward();
+			Actuator2_Forward();
 		}
 		if (input == 'e' || input == 'E'){// Small Servo Limits at 310 and 2670 midpoint at 1495
 			//Insert
@@ -298,13 +296,11 @@ int main(void)
 		}
 		if (input == 'a' || input == 'A'){// Retract Actuator 1
 			//Actuator1_Reverse();
-			HAL_GPIO_WritePin(Actuator1_DIR_GPIO_Port, Actuator1_DIR_Pin, GPIO_PIN_SET);  // Forward direction
-			HAL_GPIO_WritePin(Actuator1_PWR_GPIO_Port, Actuator1_PWR_Pin, GPIO_PIN_SET);
+			Actuator1_Reverse();
 		}
 		if (input == 's' || input == 'S'){// Retract Actuator 2
 			//Actuator2_Reverse();
-			HAL_GPIO_WritePin(Actuator2_DIR_GPIO_Port, Actuator2_DIR_Pin, GPIO_PIN_SET);  // Forward direction
-			HAL_GPIO_WritePin(Actuator2_PWR_GPIO_Port, Actuator2_PWR_Pin, GPIO_PIN_SET);
+			Actuator2_Reverse();
 		}
 		if (input == 'd' || input == 'D'){// MISC Reverse
 			//Insert Reverse
