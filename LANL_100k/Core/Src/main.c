@@ -40,7 +40,6 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-
 SPI_HandleTypeDef hspi1;
 
 TIM_HandleTypeDef htim1;
@@ -48,6 +47,7 @@ TIM_HandleTypeDef htim2;
 
 UART_HandleTypeDef huart4;
 UART_HandleTypeDef huart5;
+UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
 
@@ -72,6 +72,7 @@ static void MX_TIM2_Init(void);
 static void MX_UART4_Init(void);
 static void MX_UART5_Init(void);
 static void MX_TIM1_Init(void);
+static void MX_USART2_UART_Init(void);
 /* USER CODE BEGIN PFP */
 
 uint8_t MAX_Register_Read(uint8_t reg)
@@ -109,105 +110,59 @@ void Drill_Stop(void){}
 
 void Actuator1_Forward(void)
 {
-
-	if(HAL_GPIO_ReadPin(Actuator1_DIR_GPIO_Port,Actuator1_DIR_Pin) == GPIO_PIN_RESET){
-		return;
-		}
-		else{
-			HAL_GPIO_WritePin(Actuator1_PWR_GPIO_Port,    Actuator1_PWR_Pin,    GPIO_PIN_RESET);     // Power off
-			HAL_Delay(5);
-			HAL_GPIO_WritePin(Actuator1_DIR_GPIO_Port, Actuator1_DIR_Pin, GPIO_PIN_RESET);  // Forward direction
-			HAL_Delay(5);
-			HAL_GPIO_WritePin(Actuator1_PWR_GPIO_Port,    Actuator1_PWR_Pin,    GPIO_PIN_SET);     // Power on
-		}
+	while(HAL_GPIO_Read(Extending_Switch_GPIO_Port,Extending_Switch_Pin) == GPIO_PIN_SET){
+		HAL_GPIO_WritePin(Actuator1_DIR_GPIO_Port, Actuator1_DIR_Pin, GPIO_PIN_RESET);  // Forward direction
+		HAL_GPIO_WritePin(Actuator1_PWR_GPIO_Port,    Actuator1_PWR_Pin,    GPIO_PIN_SET);     // Power on
+	}
 }
 
 /* Turn on Actuator 1 Reverse */
 void Actuator1_Reverse(void)
 {
-	if(HAL_GPIO_ReadPin(Actuator1_DIR_GPIO_Port,Actuator1_DIR_Pin) == GPIO_PIN_SET){
-		return;
-	}
-	else{
-	    HAL_GPIO_WritePin(Actuator1_PWR_GPIO_Port,    Actuator1_PWR_Pin,    GPIO_PIN_RESET);    // Power off
-	    HAL_Delay(5);
 	    HAL_GPIO_WritePin(Actuator1_DIR_GPIO_Port, Actuator1_DIR_Pin, GPIO_PIN_SET);    // Reverse direction
-	    HAL_Delay(5);
 	    HAL_GPIO_WritePin(Actuator1_PWR_GPIO_Port,    Actuator1_PWR_Pin,    GPIO_PIN_SET);    // Power on
-	}
 }
 
 /* Turn off Actuator 1 */
 void Actuator1_Stop(void)
 {
     HAL_GPIO_WritePin(Actuator1_PWR_GPIO_Port, Actuator1_PWR_Pin, GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(Actuator1_DIR_GPIO_Port, Actuator1_DIR_Pin, GPIO_PIN_RESET);// Power off
 }
 
 /* Turn on Actuator 2 Forward */
 void Actuator2_Forward(void)
 {
-	if(HAL_GPIO_ReadPin(Actuator2_DIR_GPIO_Port,Actuator2_DIR_Pin) == GPIO_PIN_RESET){
-		return;
-	}
-	else{
-		HAL_GPIO_WritePin(Actuator2_PWR_GPIO_Port,    Actuator2_PWR_Pin,    GPIO_PIN_RESET);     // Power off
-		HAL_Delay(5);
-		HAL_GPIO_WritePin(Actuator2_DIR_GPIO_Port, Actuator2_DIR_Pin, GPIO_PIN_RESET);  // Forward direction
-		HAL_Delay(5);
+	while(HAL_GPIO_Read(Lowering_Switch_GPIO_Port,Lowering_Switch_Pin) == GPIO_PIN_SET){
 		HAL_GPIO_WritePin(Actuator2_PWR_GPIO_Port,    Actuator2_PWR_Pin,    GPIO_PIN_SET);     // Power on
+		HAL_GPIO_WritePin(Actuator2_DIR_GPIO_Port, Actuator2_DIR_Pin, GPIO_PIN_RESET);  // Forward direction
+
 	}
 }
 
 /* Turn on Actuator 2 Reverse */
 void Actuator2__Reverse(void)
 {
-	if(HAL_GPIO_ReadPin(Actuator2_DIR_GPIO_Port,Actuator2_DIR_Pin) == GPIO_PIN_SET){
-		return;
-	}
-	else{
-		HAL_GPIO_WritePin(Actuator2_PWR_GPIO_Port, Actuator2_PWR_Pin, GPIO_PIN_RESET);    // Power off
-		HAL_Delay(5);
 		HAL_GPIO_WritePin(Actuator2_DIR_GPIO_Port, Actuator2_DIR_Pin, GPIO_PIN_SET);    // Reverse direction
-		HAL_Delay(5);
 		HAL_GPIO_WritePin(Actuator2_PWR_GPIO_Port,    Actuator2_PWR_Pin,    GPIO_PIN_SET);    // Power on
-	}
 }
 
 /* Turn off Actuator 2 */
 void Actuator2_Stop(void)
 {
     HAL_GPIO_WritePin(Trigger_Actuator_PWR_GPIO_Port, Trigger_Actuator_PWR_Pin, GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(Trigger_Actuator_DIR_GPIO_Port, Trigger_Actuator_DIR_Pin, GPIO_PIN_RESET);// Power off
 }
 /* Turn on Trigger Controlling Actuator in reverse */
 void Trigger_Actuator_Reverse(void)
 {
-	if(HAL_GPIO_ReadPin(Trigger_Actuator_DIR_GPIO_Port,Trigger_Actuator_DIR_Pin) == GPIO_PIN_RESET){
-		return;
-	}
-	else{
-		HAL_GPIO_WritePin(Trigger_Actuator_PWR_GPIO_Port,    Trigger_Actuator_PWR_Pin,    GPIO_PIN_RESET);     // Power off
-		HAL_Delay(5);
 		HAL_GPIO_WritePin(Trigger_Actuator_DIR_GPIO_Port, Trigger_Actuator_DIR_Pin, GPIO_PIN_RESET);  // Forward direction
-		HAL_Delay(5);
 		HAL_GPIO_WritePin(Trigger_Actuator_PWR_GPIO_Port,    Trigger_Actuator_PWR_Pin,    GPIO_PIN_SET);     // Power on
-	}
 }
 
 /* Turn on Trigger controller forward */
 void Trigger_Actuator_Forward(void)
 {
-	if(HAL_GPIO_ReadPin(Trigger_Actuator_DIR_GPIO_Port,Trigger_Actuator_DIR_Pin) == GPIO_PIN_SET){
-		return;
-	}
-	else{
-		HAL_GPIO_WritePin(Trigger_Actuator_PWR_GPIO_Port, Trigger_Actuator_PWR_Pin, GPIO_PIN_RESET);    // Power off
-		HAL_Delay(5);
 		HAL_GPIO_WritePin(Trigger_Actuator_DIR_GPIO_Port, Trigger_Actuator_DIR_Pin, GPIO_PIN_SET);    // Reverse direction
-		HAL_Delay(5);
 		HAL_GPIO_WritePin(Trigger_Actuator_PWR_GPIO_Port,    Trigger_Actuator_PWR_Pin,    GPIO_PIN_SET);    // Power on
-	}
 }
 
 /* Turn off Trigger Controlling Actuator */
@@ -246,56 +201,6 @@ void Sampling_Script(void)
 	 *
 	 * -----End of process.
 	 */
-}
-
-
-/* Turn on Trigger Controlling Actuator in reverse */
-void Trigger_Actuator_Reverse(void)
-{
-	if(HAL_GPIO_ReadPin(Trigger_Actuator_DIR_GPIO_Port,Trigger_Actuator_DIR_Pin) == GPIO_PIN_RESET){
-		return;
-	}
-	else{
-		HAL_GPIO_WritePin(Trigger_Actuator_PWR_GPIO_Port,    Trigger_Actuator_PWR_Pin,    GPIO_PIN_RESET);     // Power off
-		HAL_Delay(5);
-		HAL_GPIO_WritePin(Trigger_Actuator_DIR_GPIO_Port, Trigger_Actuator_DIR_Pin, GPIO_PIN_RESET);  // Forward direction
-		HAL_Delay(5);
-		HAL_GPIO_WritePin(Trigger_Actuator_PWR_GPIO_Port,    Trigger_Actuator_PWR_Pin,    GPIO_PIN_SET);     // Power on
-	}
-}
-
-/* Turn on Trigger controller forward */
-void Trigger_Actuator_Forward(void)
-{
-	if(HAL_GPIO_ReadPin(Trigger_Actuator_DIR_GPIO_Port,Trigger_Actuator_DIR_Pin) == GPIO_PIN_SET){
-		return;
-	}
-	else{
-		HAL_GPIO_WritePin(Trigger_Actuator_PWR_GPIO_Port, Trigger_Actuator_PWR_Pin, GPIO_PIN_RESET);    // Power off
-		HAL_Delay(5);
-		HAL_GPIO_WritePin(Trigger_Actuator_DIR_GPIO_Port, Trigger_Actuator_DIR_Pin, GPIO_PIN_SET);    // Reverse direction
-		HAL_Delay(5);
-		HAL_GPIO_WritePin(Trigger_Actuator_PWR_GPIO_Port,    Trigger_Actuator_PWR_Pin,    GPIO_PIN_SET);    // Power on
-	}
-}
-
-/* Turn off Trigger Controlling Actuator */
-void Trigger_Actuator_Stop(void)
-{
-    HAL_GPIO_WritePin(Trigger_Actuator_PWR_GPIO_Port, Trigger_Actuator_PWR_Pin, GPIO_PIN_RESET);
-    HAL_GPIO_WritePin(Trigger_Actuator_DIR_GPIO_Port, Trigger_Actuator_DIR_Pin, GPIO_PIN_RESET);// Power off
-}
-
-/* Turn off Trigger Controlling Actuator */
-void M1_A(void)
-{
-    HAL_GPIO_WritePin(M1_A_GPIO_Port, M1_A_Pin, GPIO_PIN_SET);
-}
-// Function to set roller motor speed as a percentage
-void M1_Fwd_Set_Speed(float Full_Speed_Percent){
-
-	uint8_t preiodSet = Full_Speed_Percent;
-
 }
 /* USER CODE END PFP */
 
@@ -338,6 +243,7 @@ int main(void)
   MX_UART4_Init();
   MX_UART5_Init();
   MX_TIM1_Init();
+  MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 
   uint32_t lskeytime = 0;
@@ -536,7 +442,6 @@ static void MX_TIM1_Init(void)
 
   /* USER CODE END TIM1_Init 0 */
 
-  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
   TIM_MasterConfigTypeDef sMasterConfig = {0};
   TIM_OC_InitTypeDef sConfigOC = {0};
   TIM_BreakDeadTimeConfigTypeDef sBreakDeadTimeConfig = {0};
@@ -563,7 +468,7 @@ static void MX_TIM1_Init(void)
     Error_Handler();
   }
   sConfigOC.OCMode = TIM_OCMODE_PWM1;
-  sConfigOC.Pulse = 33;
+  sConfigOC.Pulse = 0;
   sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
   sConfigOC.OCNPolarity = TIM_OCNPOLARITY_HIGH;
   sConfigOC.OCFastMode = TIM_OCFAST_ENABLE;
@@ -751,6 +656,54 @@ static void MX_UART5_Init(void)
 }
 
 /**
+  * @brief USART2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART2_UART_Init(void)
+{
+
+  /* USER CODE BEGIN USART2_Init 0 */
+
+  /* USER CODE END USART2_Init 0 */
+
+  /* USER CODE BEGIN USART2_Init 1 */
+
+  /* USER CODE END USART2_Init 1 */
+  huart2.Instance = USART2;
+  huart2.Init.BaudRate = 115200;
+  huart2.Init.WordLength = UART_WORDLENGTH_8B;
+  huart2.Init.StopBits = UART_STOPBITS_1;
+  huart2.Init.Parity = UART_PARITY_NONE;
+  huart2.Init.Mode = UART_MODE_TX_RX;
+  huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart2.Init.OverSampling = UART_OVERSAMPLING_16;
+  huart2.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
+  huart2.Init.ClockPrescaler = UART_PRESCALER_DIV1;
+  huart2.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
+  if (HAL_UART_Init(&huart2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_UARTEx_SetTxFifoThreshold(&huart2, UART_TXFIFO_THRESHOLD_1_8) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_UARTEx_SetRxFifoThreshold(&huart2, UART_RXFIFO_THRESHOLD_1_8) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_UARTEx_DisableFifoMode(&huart2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART2_Init 2 */
+
+  /* USER CODE END USART2_Init 2 */
+
+}
+
+/**
   * @brief GPIO Initialization Function
   * @param None
   * @retval None
@@ -770,11 +723,7 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOD_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOC, Trigger_Actuator_PWR_Pin|Actuator1_DIR_Pin, GPIO_PIN_SET);
-
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(Trigger_Actuator_DIR_GPIO_Port, Trigger_Actuator_DIR_Pin, GPIO_PIN_RESET);
-
+  HAL_GPIO_WritePin(GPIOC, Trigger_Actuator_PWR_Pin|Trigger_Actuator_DIR_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOA, USB_CS_Pin|Actuator1_PWR_Pin|Actuator2_DIR_Pin, GPIO_PIN_SET);
@@ -783,22 +732,23 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(USB_IRQ_GPIO_Port, USB_IRQ_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(Actuator1_DIR_GPIO_Port, Actuator1_DIR_Pin, GPIO_PIN_SET);
+
+  /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(Actuator2_PWR_GPIO_Port, Actuator2_PWR_Pin, GPIO_PIN_SET);
 
-  /*Configure GPIO pins : Trigger_Actuator_PWR_Pin Trigger_Actuator_DIR_Pin */
-  GPIO_InitStruct.Pin = Trigger_Actuator_PWR_Pin|Trigger_Actuator_DIR_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  /*Configure GPIO pin : Extending_Switch_Pin */
+  GPIO_InitStruct.Pin = Extending_Switch_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLDOWN;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+  HAL_GPIO_Init(Extending_Switch_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PA2 PA3 */
-  GPIO_InitStruct.Pin = GPIO_PIN_2|GPIO_PIN_3;
-  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+  /*Configure GPIO pins : Trigger_Actuator_PWR_Pin Trigger_Actuator_DIR_Pin Actuator1_DIR_Pin */
+  GPIO_InitStruct.Pin = Trigger_Actuator_PWR_Pin|Trigger_Actuator_DIR_Pin|Actuator1_DIR_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  GPIO_InitStruct.Alternate = GPIO_AF7_USART2;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
   /*Configure GPIO pins : USB_CS_Pin Actuator1_PWR_Pin Actuator2_DIR_Pin */
   GPIO_InitStruct.Pin = USB_CS_Pin|Actuator1_PWR_Pin|Actuator2_DIR_Pin;
@@ -813,6 +763,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : Lowering_Switch_Pin */
+  GPIO_InitStruct.Pin = Lowering_Switch_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  HAL_GPIO_Init(Lowering_Switch_GPIO_Port, &GPIO_InitStruct);
 
   /* USER CODE BEGIN MX_GPIO_Init_2 */
 

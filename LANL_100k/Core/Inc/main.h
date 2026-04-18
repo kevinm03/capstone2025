@@ -59,6 +59,8 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define Extending_Switch_Pin GPIO_PIN_13
+#define Extending_Switch_GPIO_Port GPIOC
 #define RCC_OSC32_IN_Pin GPIO_PIN_14
 #define RCC_OSC32_IN_GPIO_Port GPIOC
 #define RCC_OSC32_OUT_Pin GPIO_PIN_15
@@ -109,6 +111,8 @@ void Error_Handler(void);
 #define Motor2_Rx_GPIO_Port GPIOD
 #define T_SWO_Pin GPIO_PIN_3
 #define T_SWO_GPIO_Port GPIOB
+#define Lowering_Switch_Pin GPIO_PIN_7
+#define Lowering_Switch_GPIO_Port GPIOB
 #define Actuator2_PWR_Pin GPIO_PIN_8
 #define Actuator2_PWR_GPIO_Port GPIOB
 
