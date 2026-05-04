@@ -21,7 +21,12 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+/**
+ * Development of Instrumentation for Grab Sampling in 100k Tank
+ * Use a USB port for USART2 communications. Use a serial PuTTY terminal on select COM# port with 115200 baud
+ * Do not use HAL_DELAY inside the while inside keystroke timer logic, Sampling script should exist outside of this timer.
+ * Many of the Current User Functions for Motion Aren't currently implemented in the While() core of the Program
+ */
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -62,6 +67,31 @@ uint8_t rx_indx;
 uint8_t rx_data[1];
 uint8_t rx_buffer[100];
 uint8_t transfer_cplt;
+/*
+ * Duty: 0 -> STM32 Hex: {0x80, 0x20, 0x00, 0x00, 0x5B, 0xFE}
+Duty: 4000 -> STM32 Hex: {0x80, 0x20, 0x0F, 0xA0, 0xFE, 0x2A}
+Duty: 8000 -> STM32 Hex: {0x80, 0x20, 0x1F, 0x40, 0x00, 0x77}
+Duty: 10000 -> STM32 Hex: {0x80, 0x20, 0x27, 0x10, 0xD6, 0xBE}
+Duty: 20000 -> STM32 Hex: {0x80, 0x20, 0x4E, 0x20, 0x51, 0x5F}
+Duty: 25000 -> STM32 Hex: {0x80, 0x20, 0x61, 0xA8, 0x57, 0x07}
+Duty: 30000 -> STM32 Hex: {0x80, 0x20, 0x75, 0x30, 0x9A, 0x01}
+Duty: 32000 -> STM32 Hex: {0x80, 0x20, 0x7D, 0x00, 0x25, 0xFB}
+Duty: 30000 -> STM32 Hex: {0x80, 0x20, 0x75, 0x30, 0x9A, 0x01}
+Duty: 25000 -> STM32 Hex: {0x80, 0x20, 0x61, 0xA8, 0x57, 0x07}
+Duty: 20000 -> STM32 Hex: {0x80, 0x20, 0x4E, 0x20, 0x51, 0x5F}
+Duty: 10000 -> STM32 Hex: {0x80, 0x20, 0x27, 0x10, 0xD6, 0xBE}
+Duty: 8000 -> STM32 Hex: {0x80, 0x20, 0x1F, 0x40, 0x00, 0x77}
+Duty: 4000 -> STM32 Hex: {0x80, 0x20, 0x0F, 0xA0, 0xFE, 0x2A}
+Duty: 0 -> STM32 Hex: {0x80, 0x20, 0x00, 0x00, 0x5B, 0xFE}
+
+ */
+
+
+const uint8_t RC_ACCEL_FULLFORWARD[] = {0x80, 0x34, 0x75, 0x30, 0x00, 0x00, 0x17, 0x70, 0x8B, 0xCA};//Acceleration Commands ripped from Arduino Libraries
+const uint8_t RC_ACCEL_FULLREVERSE[] = {0x80, 0x34, 0x8A, 0xD0, 0x00, 0x00, 0x17, 0x70, 0xE4, 0x79};
+const uint8_t RC_ACCEL_STOP[] = {0x80, 0x34, 0x00, 0x00, 0x00, 0x00, 0x17, 0x70, 0x81, 0xB9};
+
+//uint8_t sampling_halt_flag = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -75,7 +105,7 @@ static void MX_TIM1_Init(void);
 static void MX_USART2_UART_Init(void);
 /* USER CODE BEGIN PFP */
 
-uint8_t MAX_Register_Read(uint8_t reg)
+uint8_t MAX_Register_Read(uint8_t reg)//For USB Host Shield When Implemented
 {
 	uint8_t address = (reg << 3) | 0x00;//Address
 	uint8_t data = 0;//RD/WR
@@ -291,15 +321,16 @@ int main(void)
   MX_TIM1_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-  uint32_t lskeytime = 0;
-  const uint32_t timeout = 300;//Refresh time ms
+  uint32_t lskeytime = 0;//Keystroke Timer Variables
+  const uint32_t timeout = 250;//Refresh time ms
   char input = 0;
-  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
-  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 1500);
 
+  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);// Initialize/Default spot for PWM servo
+  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 1500);
   uint32_t servoPos = 1495;
-  HAL_UART_Transmit(&huart2, tx_buffer, 27, 10);
-  Actuator1_Stop();
+
+  HAL_UART_Transmit(&huart2, tx_buffer, 27, 10);//Welcome Message send
+  Actuator1_Stop();//Put initial states for pins here if not initialized
   Actuator2_Stop();
   Trigger_Actuator_Stop();
 
@@ -315,72 +346,99 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	//Actuator1_Stop();
-	//Actuator2_Stop();
-	  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, servoPos);
-
+	  if (HAL_GPIO_ReadPin(Limit_Switch_GPIO_Port, Limit_Switch_Pin) == GPIO_PIN_SET) {//Stops Sampling Arm at Horizontal
+			  if (input != 'q' && input != 'Q'){//Prevents Locking While Horizontal
+	  	       Actuator1_Stop();
+	          }
+	  }
+	__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, servoPos);
+/*	if (sampling_halt_flag[0] == 1)// Proto script for a sampling process
+	{
+		  Stop_All();
+		  Hal_Delay(100);
+		  Sampling_Script();
+		  HAL_Delay(100);
+		  sampling_halt_flag[0] = 0;
+	}  */
 	if (HAL_UART_Receive(&huart2, rx_data,1,10) == HAL_OK){
 		input = (char)rx_data[0];
 		lskeytime = HAL_GetTick();
-		HAL_UART_Transmit(&huart2, rx_data, 1, 10);
+		// For Demonstration HAL_UART_Transmit(&huart2, rx_data, 1, 10); // Returns Current Key to Port for debugging
+
 		if (input == 'q' || input == 'Q'){// Extend Actuator 1
-			//Actuator1_Forward();
-			HAL_GPIO_WritePin(Actuator1_DIR_GPIO_Port, Actuator1_DIR_Pin, GPIO_PIN_RESET);  // Forward direction
 			HAL_GPIO_WritePin(Actuator1_PWR_GPIO_Port, Actuator1_PWR_Pin, GPIO_PIN_SET);
+			HAL_GPIO_WritePin(Actuator1_DIR_GPIO_Port, Actuator1_DIR_Pin, GPIO_PIN_RESET);
 		}
 		if (input == 'w' || input == 'W'){// Extend Actuator 2
-			HAL_GPIO_WritePin(Actuator2_DIR_GPIO_Port, Actuator2_DIR_Pin, GPIO_PIN_RESET);  // Forward direction
-			HAL_GPIO_WritePin(Actuator2_PWR_GPIO_Port, Actuator2_PWR_Pin, GPIO_PIN_SET);			//Actuator2_Forward();
+			HAL_GPIO_WritePin(Actuator2_PWR_GPIO_Port, Actuator2_PWR_Pin, GPIO_PIN_SET);
+			HAL_GPIO_WritePin(Actuator2_DIR_GPIO_Port, Actuator2_DIR_Pin, GPIO_PIN_RESET);
 		}
-		if (input == 'e' || input == 'E'){// Small Servo Limits at 310 and 2670 midpoint at 1495
-			//Insert
+		if (input == 'e' || input == 'E'){// Small Servo Limits at around 310 and 2670
 			//__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, servoPos);// Move Servo to Position
 			if (servoPos <= 2670){
 				servoPos = servoPos + 20;
 			}
 		}
-		if (input == 'r' || input == 'R'){// Extend Actuator 2
-			HAL_GPIO_WritePin(Trigger_Actuator_DIR_GPIO_Port, Trigger_Actuator_DIR_Pin, GPIO_PIN_SET);  // Forward direction
-			HAL_GPIO_WritePin(Trigger_Actuator_PWR_GPIO_Port, Trigger_Actuator_PWR_Pin, GPIO_PIN_SET);			//Actuator2_Forward();
+		if (input == 'r' || input == 'R'){// Trigger Actuator
+			HAL_GPIO_WritePin(Trigger_Actuator_PWR_GPIO_Port, Trigger_Actuator_PWR_Pin, GPIO_PIN_SET);
+			HAL_GPIO_WritePin(Trigger_Actuator_DIR_GPIO_Port, Trigger_Actuator_DIR_Pin, GPIO_PIN_SET);
+		}
+		if (input == 't' || input == 'T'){// Extend Actuator 2
+
 		}
 		if (input == 'a' || input == 'A'){// Retract Actuator 1
-			//Actuator1_Reverse();
-			HAL_GPIO_WritePin(Actuator1_DIR_GPIO_Port, Actuator1_DIR_Pin, GPIO_PIN_SET);  // Forward direction
-			HAL_GPIO_WritePin(Actuator1_PWR_GPIO_Port, Actuator1_PWR_Pin, GPIO_PIN_SET);
+
+			if (HAL_GPIO_ReadPin(Limit_Switch_GPIO_Port, Limit_Switch_Pin) == GPIO_PIN_RESET) {// Unless Limit Is Hit
+				HAL_GPIO_WritePin(Actuator1_PWR_GPIO_Port, Actuator1_PWR_Pin, GPIO_PIN_SET);
+				HAL_GPIO_WritePin(Actuator1_DIR_GPIO_Port, Actuator1_DIR_Pin, GPIO_PIN_SET);
+
+			}
 		}
 		if (input == 's' || input == 'S'){// Retract Actuator 2
-			//Actuator2_Reverse();
-			HAL_GPIO_WritePin(Actuator2_DIR_GPIO_Port, Actuator2_DIR_Pin, GPIO_PIN_SET);  // Forward direction
 			HAL_GPIO_WritePin(Actuator2_PWR_GPIO_Port, Actuator2_PWR_Pin, GPIO_PIN_SET);
+			HAL_GPIO_WritePin(Actuator2_DIR_GPIO_Port, Actuator2_DIR_Pin, GPIO_PIN_SET);
 		}
-		if (input == 'd' || input == 'D'){// MISC Reverse
-			//Insert Reverse
+		if (input == 'd' || input == 'D'){//Direction Servo Controls, Use servoPos to gradually change and COMPARE to set position
 			//__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, servoPos);
 			if (servoPos >= 310){
 			servoPos = servoPos - 20;
 			}
 		}
-		if (input == 'f' || input == 'F'){// Extend Actuator 2
-			HAL_GPIO_WritePin(Trigger_Actuator_DIR_GPIO_Port, Trigger_Actuator_DIR_Pin, GPIO_PIN_RESET);  // Forward direction
-			HAL_GPIO_WritePin(Trigger_Actuator_PWR_GPIO_Port, Trigger_Actuator_PWR_Pin, GPIO_PIN_SET);			//Actuator2_Forward();
+		if (input == 'f' || input == 'F'){// Extend Drill Trigger Actuator
+			HAL_GPIO_WritePin(Trigger_Actuator_DIR_GPIO_Port, Trigger_Actuator_DIR_Pin, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(Trigger_Actuator_PWR_GPIO_Port, Trigger_Actuator_PWR_Pin, GPIO_PIN_SET);
+		}
+		if (input == 'g' || input == 'G'){// Extend Actuator 2
+
+		}
+		if (input == 'i' || input == 'I'){// Left Motor Control
+					HAL_UART_Transmit(&huart5, (uint8_t*)RC_ACCEL_FULLFORWARD, 10, 10);  // Forward direction
+				}
+		if (input == 'k' || input == 'K'){// Left Motor Control
+					HAL_UART_Transmit(&huart5, (uint8_t*)RC_ACCEL_FULLREVERSE, 10, 10);  // Forward direction
+				}
+		if (input == 'y' || input == 'Y'){//
+
+		}
+		if (input == 'h' || input == 'H'){//
+
 		}
 		if (input == ' '){// MISC Reverse
-				//Spacebar
-			//char servo_msg[32]; // Buffer large enough for the text
-			// Format the integer into a readable string
-			//uint8_t len = sprintf(servo_msg, "Position: %lu\r\n", servoPos);
-			//HAL_UART_Transmit(&huart2, (uint8_t*)servo_msg, len, 10);
+			Actuator1_Stop();
+			Actuator2_Stop();
+			Trigger_Actuator_Stop();
 
-			Sampling_Script();
 		}
 	}
 	if (input != 0 && (HAL_GetTick() - lskeytime > timeout)){
+/* For Demonstration
 		Actuator1_Stop();
 		Actuator2_Stop();
 		Trigger_Actuator_Stop();
-		//Insert Stop
-		//__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 1500);//Return Servo to Neutral
+*/
+		HAL_UART_Transmit(&huart5, (uint8_t*)RC_ACCEL_STOP, 10, 10);
 		input = 0;
+
 	}
 	 //Control and Comms Logic
 
@@ -801,6 +859,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : Limit_Switch_Pin */
+  GPIO_InitStruct.Pin = Limit_Switch_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  HAL_GPIO_Init(Limit_Switch_GPIO_Port, &GPIO_InitStruct);
 
   /* USER CODE BEGIN MX_GPIO_Init_2 */
 

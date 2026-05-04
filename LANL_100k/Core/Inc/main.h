@@ -1,21 +1,21 @@
 /* USER CODE BEGIN Header */
-/**
-  ******************************************************************************
-  * @file           : main.h
-  * @brief          : Header for main.c file.
-  *                   This file contains the common defines of the application.
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2026 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
+	/**
+	  ******************************************************************************
+	  * @file           : main.h
+	  * @brief          : Header for main.c file.
+	  *                   This file contains the common defines of the application.
+	  ******************************************************************************
+	  * @attention
+	  *
+	  * Copyright (c) 2026 STMicroelectronics.
+	  * All rights reserved.
+	  *
+	  * This software is licensed under terms that can be found in the LICENSE file
+	  * in the root directory of this software component.
+	  * If no LICENSE file comes with this software, it is provided AS-IS.
+	  *
+	  ******************************************************************************
+	  */
 /* USER CODE END Header */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
@@ -109,14 +109,16 @@ void Error_Handler(void);
 #define Motor2_Rx_GPIO_Port GPIOD
 #define T_SWO_Pin GPIO_PIN_3
 #define T_SWO_GPIO_Port GPIOB
+#define Limit_Switch_Pin GPIO_PIN_7
+#define Limit_Switch_GPIO_Port GPIOB
 #define Actuator2_PWR_Pin GPIO_PIN_8
 #define Actuator2_PWR_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
-#define MAX_REG_REVISION 0x12  // Revision register address (0b10010)
-#define MAX_READ  0x00
-#define MAX_WRITE 0x02              // The chip uses bit 1 for direction in some modes,
-                                    // but standard SPI shift is: (Reg << 3) | Direction
+	#define MAX_REG_REVISION 0x12  // Revision register address (0b10010)
+	#define MAX_READ  0x00
+	#define MAX_WRITE 0x02              // The chip uses bit 1 for direction in some modes,
+										// but standard SPI shift is: (Reg << 3) | Direction
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus
